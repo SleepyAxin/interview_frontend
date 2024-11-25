@@ -2,8 +2,11 @@
 
 import React, { useState } from "react";
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+
 import HomeIcon from "@mui/icons-material/Home";
-import SettingsIcon from "@mui/icons-material/Settings";
+import CameraIcon from "@mui/icons-material/Camera";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import BookIcon from "@mui/icons-material/Book";
 
 import Camera from "@/app/components/camera"
 
@@ -13,7 +16,9 @@ const Sidebar = () => {
   // 菜单项
   const menuItems = [
     { label: "首页", icon: <HomeIcon />, page: "home" },
-    { label: "设置", icon: <SettingsIcon />, page: "settings" },
+    { label: "面试", icon: <CameraIcon />, page: "interview" },
+    { label: "面试预约", icon: <CalendarTodayIcon />, page: "order" },
+    { label: "日志", icon: <BookIcon />, page: "log" }
   ];
 
   // 切换页面
@@ -21,7 +26,7 @@ const Sidebar = () => {
     switch (activePage) {
       case "home":
         return <Typography variant="h4">这是首页内容</Typography>;
-      case "settings":
+      case "interview":
         return <Camera></Camera>;
       default:
         return null;

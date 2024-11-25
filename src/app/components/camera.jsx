@@ -6,18 +6,12 @@ import Webcam from "react-webcam";
 const Camera = () => {
   const webcamRef = useRef(null);
 
-  // 截图功能
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    console.log("Captured Image:", imageSrc);
-  }, [webcamRef]);
-
   return (
     <div>
       <h1>摄像头画面展示</h1>
       {/* 摄像头组件 */}
       <Webcam
-        audio={false} // 是否启用麦克风
+        audio={true} // 是否启用麦克风
         ref={webcamRef} // 获取引用
         screenshotFormat="image/jpeg" // 截图格式
         videoConstraints={{
@@ -32,9 +26,6 @@ const Camera = () => {
           border: "2px solid #ccc", // 边框
         }}
       />
-      <button onClick={capture} style={{ marginTop: "10px" }}>
-        截图
-      </button>
     </div>
   );
 };
