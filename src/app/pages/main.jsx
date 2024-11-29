@@ -9,6 +9,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
 import BookIcon from "@mui/icons-material/Book"
 
 import Interview from "@/app/pages/interview"
+import Order from "@/app/pages/Order"
 
 const Main = () => 
 {
@@ -30,6 +31,7 @@ const Main = () =>
     {
       case "home": return <Typography variant="h4">这是首页内容</Typography>;
       case "interview": return <Interview />;
+      case "order": return <Order />;
       default: return null;
     }
   }
