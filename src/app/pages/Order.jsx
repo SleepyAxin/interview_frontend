@@ -1,7 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, List, ListItem, ListItemText, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 const Order = () => {
   const [appointments, setAppointments] = useState([]); // 存储所有预约
@@ -32,7 +44,7 @@ const Order = () => {
     setNewAppointment((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 添加新预约
+// 添加新预约
   const handleConfirm = () => {
     if (!newAppointment.title || !newAppointment.date) {
       alert("请填写完整的面试信息！");
@@ -40,9 +52,28 @@ const Order = () => {
     }
     const updatedAppointments = [...appointments, newAppointment];
     saveAppointments(updatedAppointments);
+    addLog(`成功预约: ${newAppointment.title} 于 ${new Date(newAppointment.date).toLocaleString()}`);
     setNewAppointment({ title: "", date: "" });
     handleCloseDialog();
   };
+
+
+  // 记录日志到 localStorage
+  const addLog = (message) => {
+    const newLog = { message, timestamp: Date.now() };
+    const savedLogs = JSON.parse(localStorage.getItem("logs")) || [];
+    const updatedLogs = [...savedLogs, newLog];
+    localStorage.setItem("logs", JSON.stringify(updatedLogs));
+  };
+
+  // 删除预约
+  const handleDelete = (index) => {
+    const removedAppointment = appointments[index];
+    const updatedAppointments = appointments.filter((_, i) => i !== index);
+    saveAppointments(updatedAppointments);
+    addLog(`取消预约: ${removedAppointment.title} 原定于 ${new Date(removedAppointment.date).toLocaleString()}`);
+  };
+
 
   return (
     <Box>
@@ -62,6 +93,14 @@ const Order = () => {
                 primary={`面试标题: ${appt.title}`}
                 secondary={`时间: ${new Date(appt.date).toLocaleString()}`}
               />
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleDelete(index)}
+                sx={{ ml: 2 }}
+              >
+                取消
+              </Button>
             </ListItem>
           ))
         ) : (

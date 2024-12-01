@@ -10,6 +10,7 @@ import BookIcon from "@mui/icons-material/Book"
 
 import Interview from "@/app/pages/interview"
 import Order from "@/app/pages/Order"
+import Log from "@/app/pages/Log";
 
 const Main = () => 
 {
@@ -32,6 +33,7 @@ const Main = () =>
       case "home": return <Typography variant="h4">这是首页内容</Typography>;
       case "interview": return <Interview />;
       case "order": return <Order />;
+      case "log": return <Log />;
       default: return null;
     }
   }
