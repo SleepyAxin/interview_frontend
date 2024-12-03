@@ -2,15 +2,26 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
+import axios from "axios";
 
 const Log = () => {
   const [logs, setLogs] = useState([]);
 
-  // 初始化时从 localStorage 加载日志记录
   useEffect(() => {
-    const savedLogs = JSON.parse(localStorage.getItem("logs")) || [];
-    setLogs(savedLogs);
+    fetchLogs();
   }, []);
+
+  const fetchLogs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:5000/api/logs", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLogs(response.data);
+    } catch (err) {
+      alert("加载日志失败");
+    }
+  };
 
   return (
     <Box>
