@@ -9,7 +9,8 @@ import BookIcon from "@mui/icons-material/Book"
 
 import Interview from "@/app/pages/interview"
 import Order from "@/app/pages/Order"
-import Log from "@/app/pages/Log";
+import Log from "@/app/pages/Log"
+import Rate from "@/app/pages/Rate"
 
 const Main = () => 
 {
@@ -21,7 +22,8 @@ const Main = () =>
     { label: "介绍", icon: <HomeIcon />, page: "introduction" },
     { label: "面试", icon: <CameraIcon />, page: "interview" },
     { label: "面试预约", icon: <CalendarTodayIcon />, page: "order" },
-    { label: "日志", icon: <BookIcon />, page: "log" }
+    { label: "日志", icon: <BookIcon />, page: "log" },
+    {label: "面试评价", icon: <BookIcon />, page: "rate"}
   ]
 
   // 切换页面
@@ -33,6 +35,7 @@ const Main = () =>
       case "interview": return <Interview />;
       case "order": return <Order />;
       case "log": return <Log />;
+      case "rate": return <Rate />;
       default: return null;
     }
   }
