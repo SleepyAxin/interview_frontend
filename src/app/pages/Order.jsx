@@ -14,66 +14,76 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import axios from "axios";
 
 const Order = () => {
-  const [appointments, setAppointments] = useState([]); // 存储所有预约
-  const [openDialog, setOpenDialog] = useState(false); // 控制弹窗状态
-  const [newAppointment, setNewAppointment] = useState({ title: "", date: "" }); // 新的预约信息
+  const [appointments, setAppointments] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newAppointment, setNewAppointment] = useState({
+    title: "",
+    date: "",
+    assignedUser: "",
+  });
 
-  // 初始化时从 localStorage 加载数据
+  // 初始化时从后端加载数据
   useEffect(() => {
-    const savedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    setAppointments(savedAppointments);
+    fetchAppointments();
   }, []);
 
-  // 保存数据到 localStorage
-  const saveAppointments = (data) => {
-    setAppointments(data);
-    localStorage.setItem("appointments", JSON.stringify(data));
+  const fetchAppointments = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:5000/api/appointments", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAppointments(response.data);
+    } catch (err) {
+      alert("加载预约失败");
+    }
   };
 
-  // 打开弹窗
   const handleOpenDialog = () => setOpenDialog(true);
-
-  // 关闭弹窗
   const handleCloseDialog = () => setOpenDialog(false);
 
-  // 更新新预约信息
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewAppointment((prev) => ({ ...prev, [name]: value }));
   };
 
-// 添加新预约
-  const handleConfirm = () => {
-    if (!newAppointment.title || !newAppointment.date) {
+  const handleConfirm = async () => {
+    const { title, date, assignedUser } = newAppointment;
+
+    if (!title || !date) {
       alert("请填写完整的面试信息！");
       return;
     }
-    const updatedAppointments = [...appointments, newAppointment];
-    saveAppointments(updatedAppointments);
-    addLog(`成功预约: ${newAppointment.title} 于 ${new Date(newAppointment.date).toLocaleString()}`);
-    setNewAppointment({ title: "", date: "" });
-    handleCloseDialog();
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:5000/api/appointments",
+        { title, date, assignedUser },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchAppointments();
+      setNewAppointment({ title: "", date: "", assignedUser: "" });
+      handleCloseDialog();
+    } catch (err) {
+      alert("添加预约失败");
+    }
   };
 
-
-  // 记录日志到 localStorage
-  const addLog = (message) => {
-    const newLog = { message, timestamp: Date.now() };
-    const savedLogs = JSON.parse(localStorage.getItem("logs")) || [];
-    const updatedLogs = [...savedLogs, newLog];
-    localStorage.setItem("logs", JSON.stringify(updatedLogs));
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/appointments/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchAppointments();
+    } catch (err) {
+      alert("删除预约失败");
+    }
   };
-
-  // 删除预约
-  const handleDelete = (index) => {
-    const removedAppointment = appointments[index];
-    const updatedAppointments = appointments.filter((_, i) => i !== index);
-    saveAppointments(updatedAppointments);
-    addLog(`取消预约: ${removedAppointment.title} 原定于 ${new Date(removedAppointment.date).toLocaleString()}`);
-  };
-
 
   return (
     <Box>
@@ -87,20 +97,24 @@ const Order = () => {
 
       <List>
         {appointments.length > 0 ? (
-          appointments.map((appt, index) => (
-            <ListItem key={index} sx={{ borderBottom: "1px solid #ddd" }}>
+          appointments.map((appt) => (
+            <ListItem key={appt.id} sx={{ borderBottom: "1px solid #ddd" }}>
               <ListItemText
                 primary={`面试标题: ${appt.title}`}
-                secondary={`时间: ${new Date(appt.date).toLocaleString()}`}
+                secondary={`时间: ${new Date(appt.date).toLocaleString()}，指定用户: ${
+                  appt.assigned_user || "无"
+                }`}
               />
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => handleDelete(index)}
-                sx={{ ml: 2 }}
-              >
-                取消
-              </Button>
+              {appt.canCancel && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleDelete(appt.id)}
+                  sx={{ ml: 2 }}
+                >
+                  取消
+                </Button>
+              )}
             </ListItem>
           ))
         ) : (
@@ -108,7 +122,6 @@ const Order = () => {
         )}
       </List>
 
-      {/* 弹窗 */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>新增面试预约</DialogTitle>
         <DialogContent>
@@ -128,6 +141,14 @@ const Order = () => {
             onChange={handleChange}
             fullWidth
             InputLabelProps={{ shrink: true }}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="指定用户名"
+            name="assignedUser"
+            value={newAppointment.assignedUser}
+            onChange={handleChange}
+            fullWidth
           />
         </DialogContent>
         <DialogActions>
