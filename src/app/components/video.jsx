@@ -28,6 +28,7 @@ import
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem
 } 
 from '@mui/material';
 import 
@@ -80,8 +81,7 @@ export default function Video()
   return (<AgoraRTCProvider client={client}><VideoContent /></AgoraRTCProvider>);
 }
 
-const VideoContent = () => 
-{
+const VideoContent = () => {
   const [calling, setCalling] = useState(false);
   const isConnected = useIsConnected();
   const [appId, setAppId] = useState("");
@@ -89,6 +89,7 @@ const VideoContent = () =>
   const [token, setToken] = useState("");
   const [ratingOpen, setRatingOpen] = useState(false);
   const [rating, setRating] = useState("");
+  const [role, setRole] = useState(""); // New state for role selection
 
   useJoin({ appid: appId, channel: channel, token: token ? token : null }, calling);
 
@@ -102,7 +103,10 @@ const VideoContent = () =>
 
   const handleCallEnd = () => {
     setCalling(false);
-    setRatingOpen(true); // 打开评价框
+    // Only open rating dialog if user is interviewer
+    if (role === 'interviewer') {
+      setRatingOpen(true);
+    }
   };
 
   const handleSaveRating = () => {
@@ -186,6 +190,17 @@ const VideoContent = () =>
           }}
         >
           <TextField
+            select
+            fullWidth
+            label="选择身份"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            sx={{ maxWidth: 400 }}
+          >
+            <MenuItem value="interviewer">面试官</MenuItem>
+            <MenuItem value="interviewee">面试人</MenuItem>
+          </TextField>
+          <TextField
             fullWidth
             label="App ID"
             value={appId}
@@ -208,7 +223,7 @@ const VideoContent = () =>
           />
           <Button
             variant="contained"
-            disabled={!appId || !channel}
+            disabled={!appId || !channel || !role} // Added role to disable condition
             onClick={() => setCalling(true)}
             startIcon={<Call />}
             sx={{ mt: 2 }}
@@ -218,7 +233,7 @@ const VideoContent = () =>
         </Box>
       )}
       <Dialog open={ratingOpen} onClose={() => setRatingOpen(false)}>
-        <DialogTitle>评价</DialogTitle>
+        <DialogTitle>评价面试者</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
