@@ -15,6 +15,7 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
         password,
       });
       localStorage.setItem("token", response.data.token);  // 保存 token
+      localStorage.setItem("username",username)
       onLoginSuccess();  // 调用父组件的成功登录函数
     } catch (err) {
       setError(err.response?.data?.message || "登录失败");

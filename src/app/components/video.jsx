@@ -101,8 +101,11 @@ const VideoContent = () =>
   const remoteUsers = useRemoteUsers();
 
   const handleCallEnd = () => {
+    const currentUsername = localStorage.getItem('username');
     setCalling(false);
-    setRatingOpen(true); // 打开评价框
+    if (currentUsername === 'test') {
+      setRatingOpen(true); // 打开评价框
+    }
   };
 
   const handleSaveRating = () => {
