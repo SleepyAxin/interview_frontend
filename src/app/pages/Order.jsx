@@ -13,8 +13,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import axios from "axios";
+
+// 定义常量
+const APPID = "c8dc81a2b2a543dd9c1e3d32e0864fa2";
+const CHANNEL_NAME = "12138";
+const TOKEN = "007eJxTYEieyFxScsBFLfClUO+Gg4o2LG8YMmod1bxlp/nkXS3ZeUeBIdkiJdnCMNEoySjR1MQ4JcUy2TDVOMXYKNXAwswkLdHI3ywgvSGQkcFG9zcjIwMEgvisDIZGhsYWDAwApYkcJQ==";
 
 const Order = () => {
   const [appointments, setAppointments] = useState([]);
@@ -25,7 +33,6 @@ const Order = () => {
     assignedUser: "",
   });
 
-  // 初始化时从后端加载数据
   useEffect(() => {
     fetchAppointments();
   }, []);
@@ -85,6 +92,11 @@ const Order = () => {
     }
   };
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert("信息已复制到剪贴板！");
+  };
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -101,9 +113,49 @@ const Order = () => {
             <ListItem key={appt.id} sx={{ borderBottom: "1px solid #ddd" }}>
               <ListItemText
                 primary={`面试标题: ${appt.title}`}
-                secondary={`时间: ${new Date(appt.date).toLocaleString()}，指定用户: ${
-                  appt.assigned_user || "无"
-                }`}
+                secondary={
+                  <>
+                    {`时间: ${new Date(appt.date).toLocaleString()}，指定用户: ${
+                      appt.assigned_user || "无"
+                    }`}
+                    <br />
+                    <span>
+                      APPID: ******{" "}
+                      <Tooltip title="复制 APPID">
+                        <IconButton
+                          size="small"
+                          onClick={() => copyToClipboard(APPID)}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </span>
+                    <br />
+                    <span>
+                      频道名称: ******{" "}
+                      <Tooltip title="复制频道名称">
+                        <IconButton
+                          size="small"
+                          onClick={() => copyToClipboard(CHANNEL_NAME)}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </span>
+                    <br />
+                    <span>
+                      令牌: ******{" "}
+                      <Tooltip title="复制令牌">
+                        <IconButton
+                          size="small"
+                          onClick={() => copyToClipboard(TOKEN)}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </span>
+                  </>
+                }
               />
               {appt.canCancel && (
                 <Button

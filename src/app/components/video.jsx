@@ -102,18 +102,18 @@ const VideoContent = () => {
   const remoteUsers = useRemoteUsers();
 
   const handleCallEnd = () => {
+    const currentUsername = localStorage.getItem('username');
     setCalling(false);
-    // Only open rating dialog if user is interviewer
-    if (role === 'interviewer') {
-      setRatingOpen(true);
+    if (currentUsername === 'test') {
+      setRatingOpen(true); // 打开评价框
     }
   };
 
   const handleSaveRating = () => {
-    const newLog = { message: `评价内容：${rating}`, timestamp: Date.now() };
-    const savedLogs = JSON.parse(localStorage.getItem("logs")) || [];
-    const updatedLogs = [...savedLogs, newLog];
-    localStorage.setItem("logs", JSON.stringify(updatedLogs));
+    const newRate = { message: `用户：test1 评价内容：${rating}`, timestamp: Date.now() };
+    const savedRates = JSON.parse(localStorage.getItem("rates")) || [];
+    const updatedRates = [...savedRates, newRate];
+    localStorage.setItem("rates", JSON.stringify(updatedRates));
     setRating("");
     setRatingOpen(false);
   };
